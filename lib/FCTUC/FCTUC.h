@@ -5,7 +5,7 @@
 // =    João Vasco @ https://github.com/JNDVasco (-2022)
 // =    Tobias Hulland @ https://github.com/errorcodecritical (2023-2025)
 // =    Martim Pegueiro @ https://github.com/LittleNyanCat (2024-2025)
-// =
+// =    Tiago Furtado @ https://github.com/tiagoluis19 (2025)
 // =============================================================
 
 #ifndef BOT_FCTUC_H
@@ -33,6 +33,10 @@
 #include <VL53L0X.h>
 #include <MFRC522.h>
 #include <Adafruit_NeoPixel.h>
+
+/*Json Enocder/Decoder*/
+#include <ArduinoJson.h>
+
 
 /* Wireless Communications */
 extern WiFiUDP udp;
@@ -126,6 +130,12 @@ private:
     static void taskReadActiveRFIDValue(void*);
     static void taskMonitorWirelessComms(void*);
 
+    /* IR Sensor Values*/
+    static constexpr uint16_t PIN_IR_SENSOR = 34;
+    static constexpr uint16_t IR_MIN = 0;
+    static constexpr uint16_t IR_MAX = 4096;
+
+
 public:
     static void begin();
     static void waitStart();
@@ -155,5 +165,9 @@ public:
     static void printI2C();
     static void printLidarValue();
     static void printRfidPcdFw();
+    static uint16_t getIRSensorValue();
+
+    static void STOP();
+    
 };
 #endif

@@ -135,7 +135,7 @@ void FCTUC::begin() {
 
     // Self-test failed procedure
     if (doSelfTest() == false) {
-        // while (true);
+        while (true);
     }
 
     mainTaskHandle = xTaskGetCurrentTaskHandle();
@@ -272,6 +272,8 @@ void FCTUC::taskMonitorWirelessComms(void*) {
 
         delay(100);
     }
+    
+
 }
 
 /**
@@ -378,7 +380,7 @@ bool FCTUC::doSelfTest() {
 }
 
 /**
- * @brief Waits until the button is pressed. This will block execution.
+ * @brief Waits until the button is pressed if so transmits the "start pressed" event through UDP and executes the main() code. This will block execution. 
  */
 void FCTUC::waitStart() {
     Serial.println("[INFO] - FCTUC is waiting to start!");
@@ -392,6 +394,13 @@ void FCTUC::waitStart() {
     }
 
     setPixelColor(0, 0, 0);
+    /*Write JSON document to signal the begining of the attempt*/
+    JsonDocument doc;
+    uint8_t buffer[256];
+    doc["event"] = "start pressed";
+    udp.beginPacket(IPAddress(10, 42, 0, 255), 1234);
+    udp.write(buffer,serializeJson(doc, buffer));
+    udp.endPacket();
 }
 
 /**
@@ -559,3 +568,30 @@ void FCTUC::printRfidPcdFw() {
     Serial.print("Right: ");
     deviceRFIDRight.PCD_DumpVersionToSerial();
 }
+/**
+  @brief Returns the value of the infrared sensor.
+ */
+
+uint16_t FCTUC::getIRSensorValue() {
+    uint16_t result = analogRead(PIN_IR_SENSOR);
+    return constrain(result, IR_MIN, IR_MAX);
+}
+
+/**
+  @brief This method transmits the stop signal to the robot thief
+ */
+
+void FCTUC::STOP() {
+    JsonDocument doc;
+    doc["command"] = "STOP";
+
+
+    uint8_t buffer[256];
+    
+    
+    udp.beginPacket(IPAddress(10, 42, 0, 255), 1234);
+    udp.write(buffer,serializeJson(doc, buffer));
+    udp.endPacket();
+
+}
+
