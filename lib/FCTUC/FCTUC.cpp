@@ -599,3 +599,31 @@ void FCTUC::STOP() {
 
 }
 
+/**
+ * @brief Get which walls exist around this cell.
+ * @returns A Walls struct, containing data about the existance of a wall on each side of the cell. This struct will return {1,1,1,1} if an invalid position is requested.
+ */
+Walls GetWallsAtPos(const uint8_t x, const uint8_t y, const uint8_t *lab){
+
+    if(x >= lab[0] || y >= lab[0])  //invalid position
+        return {1,1,1,1};
+
+
+    uint8_t linIndx = x + y * lab[0]; //lab[0] is the side size of the labyrinth. //linear index within the labyrinth. begins at 0 on the top left, going from left to right
+                                      //and from top to bottom
+
+    uint8_t byteIndx = (linIndx / 2) + 1; //position of the byte within the array that contains the data for the cell we want to read.
+
+    uint8_t cellByte = (lab[byteIndx] >> (linIndx % 2 ? 0 : 4) ) & 0b1111 ; //get the 4 bits relevant to this cell
+
+
+    return {(bool) ( (cellByte >> 3) & 1), (bool) ( (cellByte >> 1) & 2), (bool) ( (cellByte >> 1) & 1), (bool) ( (cellByte >> 0) & 1)};
+}
+
+/**
+ * @brief Get which walls exist around this cell.
+ * @returns A Walls struct, containing data about the existance of a wall on each side of the cell.
+ */
+Walls GetWallsAtPos(const Vec2 pos, const uint8_t *lab){
+    return GetWallsAtPos(pos.x, pos.y, lab);
+}

@@ -20,6 +20,7 @@
 #include <WiFiUdp.h>
 
 #include <esp_task_wdt.h>
+#include "Vec2.h"
 
 /* OTA Upload */
 #ifdef OTA_ENABLED
@@ -174,4 +175,17 @@ public:
     static void STOP();
     
 };
+
+/**
+* @brief Holds the presence of walls on all sides of a cell.
+*/
+struct Walls{
+    bool top : 1;
+    bool right : 1;
+    bool bottom : 1;
+    bool left : 1;
+};
+
+Walls GetWallsAtPos(const uint8_t, const uint8_t, const uint8_t *);
+Walls GetWallsAtPos(const Vec2, const uint8_t *);
 #endif
