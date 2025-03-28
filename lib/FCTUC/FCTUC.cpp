@@ -108,9 +108,11 @@ void FCTUC::setupWifi() {
     WiFi.config(local, gateway, subnet);
 
     int attempts = 10;
+    bool blink = false;
     while ((WiFi.status() != WL_CONNECTED) && (attempts-- > 0)) {
-        delay(1000);
+        delay(500);
         Serial.println("[INFO] - Waiting for WiFi connection...");
+        setPixelColor(0, 0, 127 * (blink = !blink));
     }
 
     if (WiFi.status() != WL_CONNECTED) {
@@ -152,7 +154,7 @@ void FCTUC::begin() {
 void FCTUC::terminate() {
     moveMotors(0, 0);
     vTaskSuspendAll();
-    while (1) {};
+    while (1) {yield();};
 }
 
 void FCTUC::taskMonitorBatteryValue(void*) {
