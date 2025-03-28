@@ -13,6 +13,7 @@ TaskHandle_t FCTUC::batteryTaskHandle;
 TaskHandle_t FCTUC::rfidTaskHandle;
 TaskHandle_t FCTUC::wifiTaskHandle;
 TaskHandle_t FCTUC::mainTaskHandle;
+TaskHandle_t FCTUC::idleTaskHandle;
 
 constexpr char FCTUC::WIFI_SSID[];
 constexpr char FCTUC::WIFI_PWD[];
@@ -100,12 +101,12 @@ void FCTUC::setupRFID() {
 
 void FCTUC::setupWifi() {
     IPAddress local, gateway, subnet;
-    local.fromString(LOCAL_IP);
-    gateway.fromString(GATEWAY_IP);
-    subnet.fromString(SUBNET_MASK);
+    //local.fromString(LOCAL_IP);
+    //gateway.fromString(GATEWAY_IP);
+    //subnet.fromString(SUBNET_MASK);
 
     WiFi.begin(WIFI_SSID, WIFI_PWD);
-    WiFi.config(local, gateway, subnet);
+    //WiFi.config(local, gateway, subnet);
 
     int attempts = 10;
     bool blink = false;
@@ -154,7 +155,8 @@ void FCTUC::begin() {
 void FCTUC::terminate() {
     moveMotors(0, 0);
     vTaskSuspendAll();
-    while (1) {yield();};
+    xTaskCreatePinnedToCore(taskIdle, "TASK_IDLE", 2000, nullptr, 1, &idleTaskHandle, 1);
+    while (1) {esp_task_wdt_reset();};
 }
 
 void FCTUC::taskMonitorBatteryValue(void*) {

@@ -19,6 +19,8 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
+#include <esp_task_wdt.h>
+
 /* OTA Upload */
 #ifdef OTA_ENABLED
 #include <ArduinoOTA.h>
@@ -102,6 +104,7 @@ private:
     static TaskHandle_t batteryTaskHandle;
     static TaskHandle_t rfidTaskHandle;
     static TaskHandle_t wifiTaskHandle;
+    static TaskHandle_t idleTaskHandle;
 
     /* Peripheral Interfaces */
     static Adafruit_NeoPixel deviceNeoPixel;
@@ -129,6 +132,7 @@ private:
     static void taskMonitorBatteryValue(void*);
     static void taskReadActiveRFIDValue(void*);
     static void taskMonitorWirelessComms(void*);
+    static void taskIdle(void*) {while(1) {esp_task_wdt_reset();}}
 
     /* IR Sensor Values*/
     static constexpr uint16_t PIN_IR_SENSOR = 34;
